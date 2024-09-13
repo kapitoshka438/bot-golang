@@ -108,13 +108,13 @@ func (m *Message) AttachInlineKeyboard(keyboard Keyboard) {
 
 // Send method sends your message.
 // Make sure you have Text or FileID in your message.
-func (m *Message) Send() error {
+func (m *Message) Send() (*[]byte, error) {
 	if m.client == nil {
-		return fmt.Errorf("client is not inited, create message with constructor NewMessage, NewTextMessage, etc")
+		return nil, fmt.Errorf("client is not inited, create message with constructor NewMessage, NewTextMessage, etc")
 	}
 
 	if m.Chat.ID == "" {
-		return fmt.Errorf("message should have chat id")
+		return nil, fmt.Errorf("message should have chat id")
 	}
 
 	switch m.ContentType {
@@ -160,7 +160,7 @@ func (m *Message) Send() error {
 		}
 	}
 
-	return fmt.Errorf("cannot send message or file without data")
+	return nil, fmt.Errorf("cannot send message or file without data")
 }
 
 // Edit method edits your message.
@@ -184,9 +184,9 @@ func (m *Message) Delete() error {
 
 // Reply method replies to the message.
 // Make sure you have ID in the message.
-func (m *Message) Reply(text string) error {
+func (m *Message) Reply(text string) (*[]byte, error) {
 	if m.ID == "" {
-		return fmt.Errorf("cannot reply to message without id")
+		return nil, fmt.Errorf("cannot reply to message without id")
 	}
 
 	m.ReplyMsgID = m.ID
@@ -197,9 +197,9 @@ func (m *Message) Reply(text string) error {
 
 // Forward method forwards your message to chat.
 // Make sure you have ID in your message.
-func (m *Message) Forward(chatID string) error {
+func (m *Message) Forward(chatID string) (*[]byte, error) {
 	if m.ID == "" {
-		return fmt.Errorf("cannot forward message without id")
+		return nil, fmt.Errorf("cannot forward message without id")
 	}
 
 	m.ForwardChatID = m.Chat.ID
