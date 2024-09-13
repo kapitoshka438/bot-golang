@@ -108,7 +108,7 @@ func (m *Message) AttachInlineKeyboard(keyboard Keyboard) {
 
 // Send method sends your message.
 // Make sure you have Text or FileID in your message.
-func (m *Message) Send() (*[]byte, error) {
+func (m *Message) Send() ([]byte, error) {
 	if m.client == nil {
 		return nil, fmt.Errorf("client is not inited, create message with constructor NewMessage, NewTextMessage, etc")
 	}
@@ -184,7 +184,7 @@ func (m *Message) Delete() error {
 
 // Reply method replies to the message.
 // Make sure you have ID in the message.
-func (m *Message) Reply(text string) (*[]byte, error) {
+func (m *Message) Reply(text string) ([]byte, error) {
 	if m.ID == "" {
 		return nil, fmt.Errorf("cannot reply to message without id")
 	}
@@ -197,7 +197,7 @@ func (m *Message) Reply(text string) (*[]byte, error) {
 
 // Forward method forwards your message to chat.
 // Make sure you have ID in your message.
-func (m *Message) Forward(chatID string) (*[]byte, error) {
+func (m *Message) Forward(chatID string) ([]byte, error) {
 	if m.ID == "" {
 		return nil, fmt.Errorf("cannot forward message without id")
 	}
