@@ -350,7 +350,7 @@ func (c *Client) GetVoiceInfo(fileID string) (*File, error) {
 	return c.GetFileInfo(fileID)
 }
 
-func (c *Client) SendTextMessage(message *Message) error {
+func (c *Client) SendTextMessage(message *Message) ([]byte, error) {
 	params := url.Values{
 		"chatId":     {message.Chat.ID},
 		"text":       {message.Text},
@@ -369,7 +369,7 @@ func (c *Client) SendTextMessage(message *Message) error {
 	if message.InlineKeyboard != nil {
 		data, err := json.Marshal(message.InlineKeyboard.GetKeyboard())
 		if err != nil {
-			return fmt.Errorf("cannot marshal inline keyboard markup: %s", err)
+			return nil, fmt.Errorf("cannot marshal inline keyboard markup: %s", err)
 		}
 
 		params.Set("inlineKeyboardMarkup", string(data))
@@ -381,17 +381,17 @@ func (c *Client) SendTextMessage(message *Message) error {
 
 	response, err := c.Do("/messages/sendText", params, nil)
 	if err != nil {
-		return fmt.Errorf("error while sending text: %s", err)
+		return response, fmt.Errorf("error while sending text: %s", err)
 	}
 
 	if err := json.Unmarshal(response, message); err != nil {
-		return fmt.Errorf("cannot unmarshal response from API: %s", err)
+		return nil, fmt.Errorf("cannot unmarshal response from API: %s", err)
 	}
 
-	return nil
+	return response, nil
 }
 
-func (c *Client) SendTextWithDeeplinkMessage(message *Message) error {
+func (c *Client) SendTextWithDeeplinkMessage(message *Message) ([]byte, error) {
 	params := url.Values{
 		"chatId":     {message.Chat.ID},
 		"text":       {message.Text},
@@ -410,14 +410,14 @@ func (c *Client) SendTextWithDeeplinkMessage(message *Message) error {
 	if message.InlineKeyboard != nil {
 		data, err := json.Marshal(message.InlineKeyboard.GetKeyboard())
 		if err != nil {
-			return fmt.Errorf("cannot marshal inline keyboard markup: %s", err)
+			return nil, fmt.Errorf("cannot marshal inline keyboard markup: %s", err)
 		}
 
 		params.Set("inlineKeyboardMarkup", string(data))
 	}
 
 	if len(message.Deeplink) == 0 {
-		return fmt.Errorf("deeplink can't be empty for SendTextWithDeeplink")
+		return nil, fmt.Errorf("deeplink can't be empty for SendTextWithDeeplink")
 	}
 	params.Set("deeplink", message.Deeplink)
 
@@ -427,14 +427,14 @@ func (c *Client) SendTextWithDeeplinkMessage(message *Message) error {
 
 	response, err := c.Do("/messages/sendTextWithDeeplink", params, nil)
 	if err != nil {
-		return fmt.Errorf("error while sending text: %s", err)
+		return response, fmt.Errorf("error while sending text: %s", err)
 	}
 
 	if err := json.Unmarshal(response, message); err != nil {
-		return fmt.Errorf("cannot unmarshal response from API: %s", err)
+		return nil, fmt.Errorf("cannot unmarshal response from API: %s", err)
 	}
 
-	return nil
+	return response, nil
 }
 
 func (c *Client) EditMessage(message *Message) error {
@@ -482,7 +482,7 @@ func (c *Client) DeleteMessage(message *Message) error {
 	return nil
 }
 
-func (c *Client) SendFileMessage(message *Message) error {
+func (c *Client) SendFileMessage(message *Message) ([]byte, error) {
 	params := url.Values{
 		"chatId":  {message.Chat.ID},
 		"caption": {message.Text},
@@ -501,7 +501,7 @@ func (c *Client) SendFileMessage(message *Message) error {
 	if message.InlineKeyboard != nil {
 		data, err := json.Marshal(message.InlineKeyboard.GetKeyboard())
 		if err != nil {
-			return fmt.Errorf("cannot marshal inline keyboard markup: %s", err)
+			return nil, fmt.Errorf("cannot marshal inline keyboard markup: %s", err)
 		}
 
 		params.Set("inlineKeyboardMarkup", string(data))
@@ -513,17 +513,17 @@ func (c *Client) SendFileMessage(message *Message) error {
 
 	response, err := c.Do("/messages/sendFile", params, nil)
 	if err != nil {
-		return fmt.Errorf("error while making request: %s", err)
+		return response, fmt.Errorf("error while making request: %s", err)
 	}
 
 	if err := json.Unmarshal(response, message); err != nil {
-		return fmt.Errorf("cannot unmarshal response: %s", err)
+		return nil, fmt.Errorf("cannot unmarshal response: %s", err)
 	}
 
-	return nil
+	return response, nil
 }
 
-func (c *Client) SendVoiceMessage(message *Message) error {
+func (c *Client) SendVoiceMessage(message *Message) ([]byte, error) {
 	params := url.Values{
 		"chatId":  {message.Chat.ID},
 		"caption": {message.Text},
@@ -542,7 +542,7 @@ func (c *Client) SendVoiceMessage(message *Message) error {
 	if message.InlineKeyboard != nil {
 		data, err := json.Marshal(message.InlineKeyboard.GetKeyboard())
 		if err != nil {
-			return fmt.Errorf("cannot marshal inline keyboard markup: %s", err)
+			return nil, fmt.Errorf("cannot marshal inline keyboard markup: %s", err)
 		}
 
 		params.Set("inlineKeyboardMarkup", string(data))
@@ -550,17 +550,17 @@ func (c *Client) SendVoiceMessage(message *Message) error {
 
 	response, err := c.Do("/messages/sendVoice", params, nil)
 	if err != nil {
-		return fmt.Errorf("error while making request: %s", err)
+		return response, fmt.Errorf("error while making request: %s", err)
 	}
 
 	if err := json.Unmarshal(response, message); err != nil {
-		return fmt.Errorf("cannot unmarshal response: %s", err)
+		return nil, fmt.Errorf("cannot unmarshal response: %s", err)
 	}
 
-	return nil
+	return response, nil
 }
 
-func (c *Client) UploadFile(message *Message) error {
+func (c *Client) UploadFile(message *Message) ([]byte, error) {
 	params := url.Values{
 		"chatId":  {message.Chat.ID},
 		"caption": {message.Text},
@@ -569,7 +569,7 @@ func (c *Client) UploadFile(message *Message) error {
 	if message.InlineKeyboard != nil {
 		data, err := json.Marshal(message.InlineKeyboard.GetKeyboard())
 		if err != nil {
-			return fmt.Errorf("cannot marshal inline keyboard markup: %s", err)
+			return nil, fmt.Errorf("cannot marshal inline keyboard markup: %s", err)
 		}
 
 		params.Set("inlineKeyboardMarkup", string(data))
@@ -577,17 +577,17 @@ func (c *Client) UploadFile(message *Message) error {
 
 	response, err := c.Do("/messages/sendFile", params, message.File)
 	if err != nil {
-		return fmt.Errorf("error while making request: %s", err)
+		return response, fmt.Errorf("error while making request: %s", err)
 	}
 
 	if err := json.Unmarshal(response, message); err != nil {
-		return fmt.Errorf("cannot unmarshal response: %s", err)
+		return nil, fmt.Errorf("cannot unmarshal response: %s", err)
 	}
 
-	return nil
+	return response, nil
 }
 
-func (c *Client) UploadVoice(message *Message) error {
+func (c *Client) UploadVoice(message *Message) ([]byte, error) {
 	params := url.Values{
 		"chatId":  {message.Chat.ID},
 		"caption": {message.Text},
@@ -596,7 +596,7 @@ func (c *Client) UploadVoice(message *Message) error {
 	if message.InlineKeyboard != nil {
 		data, err := json.Marshal(message.InlineKeyboard.GetKeyboard())
 		if err != nil {
-			return fmt.Errorf("cannot marshal inline keyboard markup: %s", err)
+			return nil, fmt.Errorf("cannot marshal inline keyboard markup: %s", err)
 		}
 
 		params.Set("inlineKeyboardMarkup", string(data))
@@ -604,14 +604,14 @@ func (c *Client) UploadVoice(message *Message) error {
 
 	response, err := c.Do("/messages/sendVoice", params, message.File)
 	if err != nil {
-		return fmt.Errorf("error while making request: %s", err)
+		return response, fmt.Errorf("error while making request: %s", err)
 	}
 
 	if err := json.Unmarshal(response, message); err != nil {
-		return fmt.Errorf("cannot unmarshal response: %s", err)
+		return nil, fmt.Errorf("cannot unmarshal response: %s", err)
 	}
 
-	return nil
+	return response, nil
 }
 
 func (c *Client) GetEvents(lastEventID int, pollTime int) ([]*Event, error) {

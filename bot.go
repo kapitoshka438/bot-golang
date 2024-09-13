@@ -229,7 +229,7 @@ func (b *Bot) NewChat(id string) *Chat {
 
 // SendMessage sends a message, passed as an argument.
 // This method fills the argument with ID of sent message and returns an error if any.
-func (b *Bot) SendMessage(message *Message) error {
+func (b *Bot) SendMessage(message *Message) ([]byte, error) {
 	message.client = b.client
 	return message.Send()
 }

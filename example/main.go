@@ -21,7 +21,7 @@ func main() {
 	log.Println(bot.Info)
 
 	message := bot.NewTextMessage("d.dorofeev@corp.mail.ru", "Hi")
-	if err = message.Send(); err != nil {
+	if _, err = message.Send(); err != nil {
 		log.Fatalf("failed to send message: %s", err)
 	}
 
@@ -31,7 +31,7 @@ func main() {
 	}
 
 	fileMessage := bot.NewFileMessage("d.dorofeev@corp.mail.ru", file)
-	if err := fileMessage.Send(); err != nil {
+	if _, err := fileMessage.Send(); err != nil {
 		log.Println(err)
 	}
 
@@ -50,7 +50,7 @@ func main() {
 	defer file.Close()
 
 	voiceMessage := bot.NewVoiceMessage("g.gabolaev@corp.mail.ru", file)
-	if err := voiceMessage.Send(); err != nil {
+	if _, err := voiceMessage.Send(); err != nil {
 		log.Println(err)
 	}
 
@@ -72,12 +72,12 @@ func main() {
 
 			message.AttachInlineKeyboard(keyboard)
 
-			if err := message.Send(); err != nil {
+			if _, err := message.Send(); err != nil {
 				log.Printf("failed to send message: %s", err)
 			}
 		case botgolang.EDITED_MESSAGE:
 			message := update.Payload.Message()
-			if err := message.Reply("do not edit!"); err != nil {
+			if _, err := message.Reply("do not edit!"); err != nil {
 				log.Printf("failed to reply to message: %s", err)
 			}
 		case botgolang.CALLBACK_QUERY:
